@@ -367,6 +367,10 @@ func (c *Context) SetFillPaint(paint Paint) {
 	state.fill.xform = state.fill.xform.Multiply(state.xform)
 }
 
+func (c *Context) CreateFramebuffer(w, h int, imageFlags ImageFlags) int {
+	return c.params.renderCreateFramebuffer(w, h, imageFlags)
+}
+
 // CreateImage creates image by loading it from the disk from specified file name.
 // Returns handle to the image.
 func (c *Context) CreateImage(filePath string, flags ImageFlags) int {

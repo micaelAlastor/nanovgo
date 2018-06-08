@@ -7,6 +7,7 @@ import (
 type nvgParams interface {
 	edgeAntiAlias() bool
 	renderCreate() error
+	renderCreateFramebuffer(w, h int, flags ImageFlags) int
 	renderCreateTexture(texType nvgTextureType, w, h int, flags ImageFlags, data []byte) int
 	renderDeleteTexture(image int) error
 	renderUpdateTexture(image, x, y, w, h int, data []byte) error
