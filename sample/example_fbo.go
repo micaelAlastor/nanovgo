@@ -75,7 +75,7 @@ func main() {
 
 			img := nanovgo.ImagePattern(0, 0, 100, 100, 0, fb.Image(), 1.0)
 			ctx.BeginPath()
-			ctx.RoundedRect(200, 200, 250, 250, 20)
+			ctx.RoundedRect(200, 200, 300, 300, 20)
 			ctx.SetFillPaint(img)
 			ctx.Fill()
 			ctx.SetStrokeColor(nanovgo.RGBA(0, 255, 0, 255))
