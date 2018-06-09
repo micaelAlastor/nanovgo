@@ -1,6 +1,9 @@
 package nanovgo
 
-import "github.com/goxjs/gl"
+import (
+	"github.com/goxjs/gl"
+	"fmt"
+)
 
 type GLint = int32
 type GLuint = uint32
@@ -34,7 +37,7 @@ func (p *glParams) renderCreateFramebuffer(w, h int, flags ImageFlags) *FrameBuf
 	defaultRBO = GetBoundRenderbuffer()
 
 	fb := new(FrameBuffer)
-	fb.image = p.renderCreateTexture(nvgTextureRGBA, w, h, flags, nil)
+	fb.image = p.renderCreateTexture(nvgTextureRGBA, w, h, flags|ImagePreMultiplied, nil)
 	fb.texture = p.context.findTexture(fb.image)
 	fb.ctx = p.context
 
@@ -51,16 +54,18 @@ func (p *glParams) renderCreateFramebuffer(w, h int, flags ImageFlags) *FrameBuf
 	gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fb.texture.tex, 0)
 	gl.FramebufferRenderbuffer(gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, fb.rbo)
 
+	if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE{
+		fmt.Println("YOBA")
+	}
+
 	gl.BindFramebuffer(gl.FRAMEBUFFER, defaultFBO)
 	gl.BindRenderbuffer(gl.RENDERBUFFER, defaultRBO)
+
 
 	return fb
 }
 
 func NvgluBindFramebuffer(fb *FrameBuffer){
-	if !defaultFBO.Valid() {
-		defaultFBO = gl.GetBoundFramebuffer()
-	}
 	if fb != nil {
 		gl.BindFramebuffer(gl.FRAMEBUFFER, fb.fbo)
 	} else {
