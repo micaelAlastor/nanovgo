@@ -7,12 +7,16 @@ type GLuint = uint32
 
 var defaultFBO = gl.Framebuffer{0}
 
-type NVGLUFrameBuffer struct {
+type FrameBuffer struct {
 	ctx *glContext
 	fbo gl.Framebuffer
 	rbo gl.Renderbuffer
 	texture *glTexture
 	image int
+}
+
+func (fb *FrameBuffer) Image() int {
+	return fb.image
 }
 
 func GetBoundRenderbuffer() gl.Renderbuffer {
@@ -21,7 +25,7 @@ func GetBoundRenderbuffer() gl.Renderbuffer {
 	return gl.Renderbuffer{Value: uint32(b)}
 }
 
-func (p *glParams) RenderCreateFramebuffer(w, h int, flags ImageFlags) *NVGLUFrameBuffer {
+func (p *glParams) renderCreateFramebuffer(w, h int, flags ImageFlags) *FrameBuffer {
 
 	var defaultFBO gl.Framebuffer
 	var defaultRBO gl.Renderbuffer
@@ -29,7 +33,7 @@ func (p *glParams) RenderCreateFramebuffer(w, h int, flags ImageFlags) *NVGLUFra
 	defaultFBO = gl.GetBoundFramebuffer()
 	defaultRBO = GetBoundRenderbuffer()
 
-	fb := new(NVGLUFrameBuffer)
+	fb := new(FrameBuffer)
 	fb.image = p.renderCreateTexture(nvgTextureRGBA, w, h, flags, nil)
 	fb.texture = p.context.findTexture(fb.image)
 	fb.ctx = p.context
@@ -53,7 +57,7 @@ func (p *glParams) RenderCreateFramebuffer(w, h int, flags ImageFlags) *NVGLUFra
 	return fb
 }
 
-func NvgluBindFramebuffer(fb *NVGLUFrameBuffer){
+func NvgluBindFramebuffer(fb *FrameBuffer){
 	if !defaultFBO.Valid() {
 		defaultFBO = gl.GetBoundFramebuffer()
 	}
@@ -65,7 +69,7 @@ func NvgluBindFramebuffer(fb *NVGLUFrameBuffer){
 
 }
 
-func NvgluDeleteFramebuffer(fb *NVGLUFrameBuffer) {
+func NvgluDeleteFramebuffer(fb *FrameBuffer) {
 	if fb == nil {
 		return
 	}

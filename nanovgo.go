@@ -367,7 +367,7 @@ func (c *Context) SetFillPaint(paint Paint) {
 	state.fill.xform = state.fill.xform.Multiply(state.xform)
 }
 
-func (c *Context) CreateFramebuffer(w, h int, imageFlags ImageFlags) int {
+func (c *Context) CreateFramebuffer(w, h int, imageFlags ImageFlags) *FrameBuffer {
 	return c.params.renderCreateFramebuffer(w, h, imageFlags)
 }
 
