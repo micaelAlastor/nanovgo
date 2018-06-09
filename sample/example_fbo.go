@@ -40,7 +40,8 @@ func main() {
 
 	pixelRatio = float32(fbWidth) / float32(winWidth)
 
-	fb = ctx.CreateFramebuffer(int(100*pixelRatio), int(100*pixelRatio), nanovgo.ImageRepeatX | nanovgo.ImageRepeatY)
+	fb = ctx.CreateFramebuffer(fbWidth, fbHeight, 0)
+	//fb = ctx.CreateFramebuffer(int(100*pixelRatio), int(100*pixelRatio), nanovgo.ImageGenerateMipmaps)
 	if fb == nil {
 		fmt.Println("PIZDEC")
 		return
@@ -73,7 +74,7 @@ func main() {
 				ctx.Fill()
 			}
 
-			img := nanovgo.ImagePattern(0, 0, 100, 100, 0, fb.Image(), 1.0)
+			img := nanovgo.ImagePattern(0, 0, float32(fbWidth), float32(fbHeight), 0, fb.Image(), 1.0)
 			ctx.BeginPath()
 			ctx.RoundedRect(200, 200, 300, 300, 20)
 			ctx.SetFillPaint(img)
@@ -117,7 +118,7 @@ func renderPattern(ctx *nanovgo.Context, fb *nanovgo.FrameBuffer, pxRatio float3
 	ctx.BeginFrame(winWidth, winHeight, pxRatio)
 
 	ctx.BeginPath()
-	ctx.Circle(10, 10, 80)
+	ctx.Circle(300, 300, 50)
 	ctx.SetFillColor(nanovgo.RGBA(255, 0, 0, 255))
 	ctx.Fill()
 
