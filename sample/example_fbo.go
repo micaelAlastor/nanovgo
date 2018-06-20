@@ -4,7 +4,6 @@ import (
 	"github.com/goxjs/gl"
 	"github.com/goxjs/glfw"
 	"nanovgo"
-	"fmt"
 )
 
 func main() {
@@ -43,7 +42,7 @@ func main() {
 	fb = ctx.CreateFramebuffer(fbWidth, fbHeight, 0)
 	//fb = ctx.CreateFramebuffer(int(100*pixelRatio), int(100*pixelRatio), nanovgo.ImageGenerateMipmaps)
 	if fb == nil {
-		fmt.Println("PIZDEC")
+		panic("framebufferobject should be somewhere around there")
 		return
 	}
 

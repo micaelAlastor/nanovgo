@@ -231,7 +231,11 @@ func (c *glContext) convertPaint(frag *glFragUniforms, paint *Paint, scissor *nv
 			return errors.New("invalid texture in GLParams.convertPaint")
 		}
 		if tex.flags&ImageFlippy != 0 {
-			frag.setPaintMat(ScaleMatrix(1.0, -1.0).Multiply(paint.xform).Inverse().ToMat3x4())
+			//frag.setPaintMat(ScaleMatrix(1.0, -1.0).Multiply(paint.xform).Inverse().ToMat3x4())
+			m1 := TranslateMatrix(0.0, frag[37]*0.5).Multiply(paint.xform)
+			m2 := ScaleMatrix(1.0, -1.0).Multiply(m1)
+			m1 = TranslateMatrix(0.0, -frag[37]*0.5).Multiply(m2)
+			frag.setPaintMat(m1.Inverse().ToMat3x4())
 		} else {
 			frag.setPaintMat(paint.xform.Inverse().ToMat3x4())
 		}
