@@ -37,7 +37,7 @@ func (p *glParams) renderCreateFramebuffer(w, h int, flags ImageFlags) *FrameBuf
 	defaultRBO = GetBoundRenderbuffer()
 
 	fb := new(FrameBuffer)
-	fb.image = p.renderCreateTexture(nvgTextureRGBA, w, h, flags|ImagePreMultiplied, nil)
+	fb.image = p.renderCreateTexture(nvgTextureRGBA, w, h, flags|ImageFlippy|ImagePreMultiplied, nil)
 	fb.texture = p.context.findTexture(fb.image)
 	fb.ctx = p.context
 
@@ -55,7 +55,7 @@ func (p *glParams) renderCreateFramebuffer(w, h int, flags ImageFlags) *FrameBuf
 	gl.FramebufferRenderbuffer(gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, fb.rbo)
 
 	if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE{
-		fmt.Println("YOBA")
+		fmt.Println("Bad frame buffer status")
 	}
 
 	gl.BindFramebuffer(gl.FRAMEBUFFER, defaultFBO)
