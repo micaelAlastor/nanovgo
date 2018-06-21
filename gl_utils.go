@@ -37,7 +37,7 @@ func (p *glParams) renderCreateFramebuffer(w, h int, flags ImageFlags) *FrameBuf
 	defaultRBO = GetBoundRenderbuffer()
 
 	fb := new(FrameBuffer)
-	fb.image = p.renderCreateTexture(nvgTextureRGBA, w, h, flags|ImagePreMultiplied, nil)
+	fb.image = p.renderCreateTexture(nvgTextureRGBA, w, h, flags|ImagePreMultiplied|ImageFlippy, nil)
 	fb.texture = p.context.findTexture(fb.image)
 	fb.ctx = p.context
 

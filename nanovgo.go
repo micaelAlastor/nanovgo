@@ -158,6 +158,18 @@ func (c *Context) BeginFrame(windowWidth, windowHeight int, devicePixelRatio flo
 	c.textTriCount = 0
 }
 
+// Same as normal begin frame but without reset of states stack.
+// Usefull for some tricks with rendering multiple fbo in one common coordinate system
+func (c *Context) BeginFrameWithSameStates(windowWidth, windowHeight int, devicePixelRatio float32) {
+	c.setDevicePixelRatio(devicePixelRatio)
+	c.params.renderViewport(windowWidth, windowHeight)
+
+	c.drawCallCount = 0
+	c.fillTriCount = 0
+	c.strokeTriCount = 0
+	c.textTriCount = 0
+}
+
 // CancelFrame cancels drawing the current frame.
 func (c *Context) CancelFrame() {
 	c.params.renderCancel()
