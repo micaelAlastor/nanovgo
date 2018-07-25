@@ -1,4 +1,0 @@
-[submodule "gh-pages"]
-	path = gh-pages
-	url = git@github.com:shibukawa/nanovgo.git
-	branch = gh-pages
