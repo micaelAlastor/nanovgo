@@ -2,7 +2,7 @@ package perfgraph
 
 import (
 	"fmt"
-	"github.com/shibukawa/nanovgo"
+	"github.com/micaelAlastor/nanovgo"
 	"time"
 )
 
