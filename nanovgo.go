@@ -639,6 +639,182 @@ func (c *Context) ArcTo(x1, y1, x2, y2, radius float32) {
 	c.Arc(cx, cy, radius, a0, a1, dir)
 }
 
+// SectorSegment create new segment of sector. The arc center is at (x,y), the inner arc radius is radiusInner,
+// and outer radius is radiusOuter. The sector drawing from startAngle to (startAngle + sweepAngle)
+// Angles are specified in radians.
+func (c *Context) SectorSegment(x, y, radiusOuter, radiusInner, startAngle, sweepAngle float32) {
+	cosSweepAngle := cosF(startAngle + sweepAngle)
+	sinSweepAngle := sinF(startAngle + sweepAngle)
+	var outerArcMotion, innerArcMotion Direction
+	if sweepAngle > 0 {
+		outerArcMotion = Clockwise
+		innerArcMotion = CounterClockwise
+	} else {
+		outerArcMotion = CounterClockwise
+		innerArcMotion = Clockwise
+	}
+	c.Arc(x, y, radiusOuter, float32(startAngle), float32(startAngle+sweepAngle), outerArcMotion)
+	c.LineTo(x+cosSweepAngle*radiusInner, y+sinSweepAngle*radiusInner)
+	c.Arc(x, y, radiusInner, float32(startAngle+sweepAngle), float32(startAngle), innerArcMotion)
+	c.appendCommand([]float32{
+		float32(nvgCLOSE),
+	})
+}
+
+// Create bounded circle in (x,y) with radius and sides shifts.
+func (c *Context) BoundedCircle(x, y, radius, left, right, top, bottom float32) {
+	c.MoveTo(x+maxF(left, -radius), y)
+	if left < 0 && (top < 0) {
+		c.drawSegmentX(x, y, radius, left, top, right, bottom)
+	}
+
+	if right > 0 && (top < 0) {
+		c.drawSegmentY(x, y, radius, right, top, left, bottom)
+	}
+
+	if right > 0 && (bottom > 0) {
+		c.drawSegmentX(x, y, radius, right, bottom, left, top)
+	}
+
+	if left < 0 && (bottom > 0) {
+		c.drawSegmentY(x, y, radius, left, bottom, right, top)
+	}
+
+	c.appendCommand([]float32{
+		float32(nvgCLOSE),
+	})
+}
+
+func (c *Context) drawSegmentX(centerX, centerY, radius, x, y, edgeX, edgeY float32) {
+	p1Ax, p1Ay := pointXFromX(FPoint{x, y}, radius)
+	p2Ax, p2Ay := pointYFromX(FPoint{x, y}, radius)
+	pe1x, pe1y := pointXFromX(FPoint{edgeX, y}, radius)
+	pe2x, pe2y := pointYFromX(FPoint{x, edgeY}, radius)
+	fxc := extendedBetween(pe1x, p1Ax, p2Ax)
+	fxline := extendedBetween(pe1x, p2Ax, 0.0)
+	var p2Bx, p2By float32
+	if fxc {
+		p2Bx = pe1x
+		p2By = pe1y
+	} else {
+		p2Bx = p2Ax
+		p2By = p2Ay
+	}
+	fyc := extendedBetween(pe2y, p1Ay, p2By)
+	fyline := extendedBetween(pe2y, p1Ay, 0.0)
+	var p1Bx, p1By float32
+	if fyc {
+		p1Bx = pe2x
+		p1By = pe2y
+	} else {
+		p1Bx = p1Ax
+		p1By = p1Ay
+	}
+	a1 := RadToDeg(theta(&FPoint{p1Bx, p1By}))
+	a2A := RadToDeg(theta(&FPoint{p2Bx, p2By}))
+	var baseX, baseY float32
+	if fxc || fxline {
+		baseX = edgeX
+	} else {
+		baseX = 0.0
+	}
+	if fyc || fyline {
+		baseY = edgeY
+	} else {
+		baseY = 0.0
+	}
+	if fyc || fyline {
+		c.LineTo(p1Bx+centerX, baseY+centerY)
+	}
+	var a2B float32
+	if a2A == 0 {
+		a2B = 360.0
+	} else {
+		a2B = a2A
+	}
+
+	if a1 != a2A {
+		if a2B > a1 {
+			c.LineTo(p1Bx+centerX, p1By+centerY)
+			sweepAngle := a2B - a1
+			sweepAngleInRad := DegToRad(sweepAngle)
+			startAngleInRad := DegToRad(a1)
+			c.Arc(centerX, centerY, radius, startAngleInRad, startAngleInRad+sweepAngleInRad, Clockwise)
+		} else {
+			c.LineTo(p1Bx+centerX, p2By+centerY)
+		}
+	}
+	c.LineTo(baseX+centerX, p2By+centerY)
+	if fxc || fxline {
+		c.LineTo(baseX+centerX, baseY+centerY)
+	}
+}
+
+func (c *Context) drawSegmentY(centerX, centerY, radius, x, y, edgeX, edgeY float32) {
+	p1Ax, p1Ay := pointYFromX(FPoint{x, y}, radius)
+	p2Ax, p2Ay := pointXFromX(FPoint{x, y}, radius)
+	pe1x, pe1y := pointYFromX(FPoint{x, edgeY}, radius)
+	pe2x, pe2y := pointXFromX(FPoint{edgeX, y}, radius)
+	fyc := extendedBetween(pe1y, p1Ay, p2Ay)
+	fyline := extendedBetween(pe1y, p1Ay, 0.0)
+	var p2Bx, p2By float32
+	if fyc {
+		p2Bx = pe1x
+		p2By = pe1y
+	} else {
+		p2Bx = p2Ax
+		p2By = p2Ay
+	}
+	fxc := extendedBetween(pe2x, p1Ax, p2Bx)
+	fxline := extendedBetween(pe2x, p2Bx, 0.0)
+	var p1Bx, p1By float32
+	if fyc {
+		p1Bx = pe2x
+		p1By = pe2y
+	} else {
+		p1Bx = p1Ax
+		p1By = p1Ay
+	}
+	a1 := RadToDeg(theta(&FPoint{p1Bx, p1By}))
+	a2A := RadToDeg(theta(&FPoint{p2Bx, p2By}))
+	var baseX, baseY float32
+	if fxc || fxline {
+		baseX = edgeX
+	} else {
+		baseX = 0.0
+	}
+	if fyc || fyline {
+		baseY = edgeY
+	} else {
+		baseY = 0.0
+	}
+	if fxc || fxline {
+		c.LineTo(baseX+centerX, p1By+centerY)
+	}
+	var a2B float32
+	if a2A == 0 {
+		a2B = 360.0
+	} else {
+		a2B = a2A
+	}
+
+	if a1 != a2A {
+		if a2B > a1 {
+			c.LineTo(p1Bx+centerX, p1By+centerY)
+			sweepAngle := a2B - a1
+			sweepAngleInRad := DegToRad(sweepAngle)
+			startAngleInRad := DegToRad(a1)
+			c.Arc(centerX, centerY, radius, startAngleInRad, startAngleInRad+sweepAngleInRad, Clockwise)
+		} else {
+			c.LineTo(p2Bx+centerX, p1By+centerY)
+		}
+	}
+	c.LineTo(p2Bx+centerX, baseY+centerY)
+	if fyc || fyline {
+		c.LineTo(baseX+centerX, baseY+centerY)
+	}
+}
+
 // Rect creates new rectangle shaped sub-path.
 func (c *Context) Rect(x, y, w, h float32) {
 	c.appendCommand([]float32{

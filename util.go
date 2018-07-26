@@ -14,6 +14,12 @@ func RadToDeg(rad float32) float32 {
 	return rad / PI * 180.0
 }
 
+func extendedBetween(arg float32, min float32, max float32) bool {
+	nmin := minF(min, max)
+	nmax := maxF(min, max)
+	return arg >= nmin && arg <= nmax
+}
+
 func signF(a float32) float32 {
 	if a > 0.0 {
 		return 1.0
@@ -120,8 +126,20 @@ func acosF(a float32) float32 {
 	return float32(math.Acos(float64(a)))
 }
 
+func cosF(a float32) float32 {
+	return float32(math.Cos(float64(a)))
+}
+
+func sinF(a float32) float32 {
+	return float32(math.Sin(float64(a)))
+}
+
 func tanF(a float32) float32 {
 	return float32(math.Tan(float64(a)))
+}
+
+func atanF(a float32) float32 {
+	return float32(math.Atan(float64(a)))
 }
 
 func sinCosF(a float32) (float32, float32) {

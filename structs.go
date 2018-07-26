@@ -523,3 +523,83 @@ type TextRow struct {
 	Width      float32 // Logical width of the row.
 	MinX, MaxX float32 // Actual bounds of the row. Logical with and bounds can differ because of kerning and some parts over extending.
 }
+
+
+type FPoint struct {
+	X float32
+	Y float32
+}
+
+func (p1 *FPoint) getX() float32 {
+	return p1.X
+}
+
+func (p1 *FPoint) getY() float32 {
+	return p1.Y
+}
+
+func (p1 *FPoint) rotatedByRadians(angle float32) *FPoint {
+	angleCos := cosF(angle)
+	angleSin := sinF(angle)
+	return &FPoint{p1.X*angleCos - p1.Y*angleSin, p1.X*angleSin + p1.Y*angleCos}
+}
+
+func (p1 *FPoint) unitVector() *FPoint {
+	r := p1.polarRadius()
+	return &FPoint{p1.X / r, p1.Y / r}
+}
+
+func (p1 *FPoint) polarRadius() float32 {
+	//Answer the receiver's radius in polar coordinate system.
+	return sqrtF(p1.X*p1.X + p1.Y*p1.Y)
+}
+
+func (p1 *FPoint) equalZero() bool {
+	return p1.X == 0.0 && p1.Y == 0.0
+}
+
+func (p1 *FPoint) add(p2 *FPoint) *FPoint {
+	return &FPoint{p1.getX() + p2.getX(), p1.getY() + p2.getY()}
+}
+
+func pointXFromX(point FPoint, r float32) (float32, float32) {
+	radius := absF(r)
+	if absF(point.X) >= radius {
+		return radius * signF(point.X), 0
+	} else {
+		calculatedY := sqrtF(radius*radius-point.X*point.X) * signF(point.Y)
+		return point.X, calculatedY
+	}
+}
+
+func pointYFromX(point FPoint, r float32) (float32, float32) {
+	radius := absF(r)
+	if absF(point.Y) >= radius {
+		return 0, radius * signF(point.Y)
+	} else {
+		calculatedX := sqrtF(radius*radius-point.Y*point.Y) * signF(point.X)
+		return calculatedX, point.Y
+	}
+}
+
+func theta(point *FPoint) float32 {
+	if point.X == 0 {
+		if point.Y > 0 {
+			return PI * 0.5
+		} else {
+			return PI * 1.5
+		}
+	} else {
+		tan := point.Y / point.X
+		theta := atanF(tan)
+		if point.X < 0 {
+			return theta + PI
+		} else {
+			if theta < 0 {
+				return theta + 2*PI
+			} else {
+				return theta
+			}
+		}
+	}
+}
