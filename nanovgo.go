@@ -661,6 +661,23 @@ func (c *Context) SectorSegment(x, y, radiusOuter, radiusInner, startAngle, swee
 	})
 }
 
+// Create polyline using points. If isClose=true polyline will be close.
+func (c *Context) Polyline(points []FPoint, isClose bool) {
+	var commandsList []float32
+	for i, point := range points{
+		if i == 0 {
+			commandsList = append(commandsList, float32(nvgMOVETO), point.X, point.Y)
+		} else {
+			commandsList = append(commandsList, float32(nvgLINETO), point.X, point.Y)
+		}
+	}
+	if isClose {
+		commandsList = append(commandsList, float32(nvgCLOSE))
+	}
+
+	c.appendCommand(commandsList)
+}
+
 // Create bounded circle in (x,y) with radius and sides shifts.
 func (c *Context) BoundedCircle(x, y, radius, left, right, top, bottom float32) {
 	c.MoveTo(x+maxF(left, -radius), y)
