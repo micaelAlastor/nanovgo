@@ -430,7 +430,6 @@ func (p *glParams) renderCreate() error {
 	context.shader.getUniforms()
 
 	context.vertexBuffer = gl.CreateBuffer()
-	context.vertexBuffer = gl.CreateBuffer()
 
 	checkError(context, "create done")
 	gl.Finish()
