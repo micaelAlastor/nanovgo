@@ -55,7 +55,7 @@ func (p *glParams) renderCreateFramebuffer(w, h int, flags ImageFlags) *FrameBuf
 	gl.FramebufferRenderbuffer(gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, fb.rbo)
 
 	if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE{
-		fmt.Println("YOBA")
+		fmt.Println("Framebuffer have bad status.")
 	}
 
 	gl.BindFramebuffer(gl.FRAMEBUFFER, defaultFBO)

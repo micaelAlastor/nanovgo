@@ -40,7 +40,6 @@ func main() {
 	pixelRatio = float32(fbWidth) / float32(winWidth)
 
 	fb = ctx.CreateFramebuffer(fbWidth, fbHeight, 0)
-	//fb = ctx.CreateFramebuffer(int(100*pixelRatio), int(100*pixelRatio), nanovgo.ImageGenerateMipmaps)
 	if fb == nil {
 		panic("framebufferobject should be somewhere around there")
 		return
@@ -66,18 +65,18 @@ func main() {
 		if fb != nil {
 			ctx.Save()
 
-			for i := 0; i < 20; i++ {
-				ctx.BeginPath()
-				ctx.Rect(float32(10+i*30), 10, 10, float32(winHeight-20))
-				ctx.SetFillColor(nanovgo.HSLA(float32(i/19.0), 0.5, 0.5, 255))
-				ctx.Fill()
-			}
+			ctx.BeginPath()
+			ctx.RoundedRect(300, 200, 200,200,10)
+			ctx.Circle(200, 400, 50)
+			ctx.SetFillColor(nanovgo.RGBA(255, 0, 0, 255))
+			ctx.Fill()
 
 			img := nanovgo.ImagePattern(0, 0, float32(fbWidth), float32(fbHeight), 0, fb.Image(), 1.0)
 			ctx.BeginPath()
-			ctx.RoundedRect(200, 200, 300, 300, 20)
+			ctx.Circle(200, 200, 150)
 			ctx.SetFillPaint(img)
 			ctx.Fill()
+			ctx.Stroke()
 			ctx.SetStrokeColor(nanovgo.RGBA(0, 255, 0, 255))
 			ctx.SetStrokeWidth(3)
 			ctx.Stroke()
@@ -112,14 +111,17 @@ func renderPattern(ctx *nanovgo.Context, fb *nanovgo.FrameBuffer, pxRatio float3
 	nanovgo.NvgluBindFramebuffer(fb)
 	gl.Viewport(0, 0, fboWidth, fboHeight)
 	gl.ClearColor(0, 0, 0, 0)
-	gl.Clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
+	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
 
 	ctx.BeginFrame(winWidth, winHeight, pxRatio)
 
-	ctx.BeginPath()
-	ctx.Circle(300, 300, 50)
-	ctx.SetFillColor(nanovgo.RGBA(255, 0, 0, 255))
-	ctx.Fill()
+	for i := 0; i < 20; i++ {
+		ctx.BeginPath()
+		ctx.Rect(float32(10+i*30), 10, 5, float32(winHeight-20))
+		ctx.Rotate(nanovgo.DegToRad(1))
+		ctx.SetFillColor(nanovgo.HSLA(float32(i/19.0), 0.5, 0.5, 255))
+		ctx.Fill()
+	}
 
 	ctx.EndFrame()
 
