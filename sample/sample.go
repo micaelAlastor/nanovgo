@@ -93,22 +93,22 @@ func main() {
 func LoadDemo(ctx *nanovgo.Context) *demo.DemoData {
 	d := &demo.DemoData{}
 	for i := 0; i < 12; i++ {
-		path := fmt.Sprintf("images/image%d.jpg", i+1)
+		path := fmt.Sprintf("sample/images/image%d.jpg", i+1)
 		d.Images = append(d.Images, ctx.CreateImage(path, 0))
 		if d.Images[i] == 0 {
 			log.Fatalf("Could not load %s", path)
 		}
 	}
 
-	d.FontIcons = ctx.CreateFont("icons", "entypo.ttf")
+	d.FontIcons = ctx.CreateFont("icons", "sample/entypo.ttf")
 	if d.FontIcons == -1 {
 		log.Fatalln("Could not add font icons.")
 	}
-	d.FontNormal = ctx.CreateFont("sans", "Roboto-Regular.ttf")
+	d.FontNormal = ctx.CreateFont("sans", "sample/Roboto-Regular.ttf")
 	if d.FontNormal == -1 {
 		log.Fatalln("Could not add font italic.")
 	}
-	d.FontBold = ctx.CreateFont("sans-bold", "Roboto-Bold.ttf")
+	d.FontBold = ctx.CreateFont("sans-bold", "sample/Roboto-Bold.ttf")
 	if d.FontBold == -1 {
 		log.Fatalln("Could not add font bold.")
 	}

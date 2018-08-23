@@ -484,7 +484,7 @@ func (c *nvgPathCache) expandFill(w float32, lineJoin LineCap, miterLimit, fring
 					index = bevelJoin(dst, index, p0, p1, lw, rw, lu, ru, fringeWidth)
 				} else {
 					(&dst[index]).set(p1.x+(p1.dmx*lw), p1.y+(p1.dmy*lw), lu, 1)
-					(&dst[index+1]).set(p1.x+(p1.dmx*lw), p1.y+(p1.dmy*lw), lu, 1)
+					(&dst[index+1]).set(p1.x-(p1.dmx*lw), p1.y-(p1.dmy*lw), ru, 1)
 					index += 2
 				}
 				p1Index++
@@ -523,7 +523,6 @@ type TextRow struct {
 	Width      float32 // Logical width of the row.
 	MinX, MaxX float32 // Actual bounds of the row. Logical with and bounds can differ because of kerning and some parts over extending.
 }
-
 
 type FPoint struct {
 	X float32
